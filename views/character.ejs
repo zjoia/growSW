@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Star Wars Character</title>
+</head>
+<body>
+<% for(var id in attr) { %>
+<ul style='list-style: none;'>
+    <% for(var key in attr[id]) { %>
+    <li>
+        <b><%= key %>: <%= attr[id][key] %></b>
+    </li>
+    <% } %>
+</ul>
+<% } %>
+</body>
+</html>

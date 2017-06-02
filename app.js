@@ -5,6 +5,8 @@ const app = express();
 
 const BASE_URL = 'http://swapi.co/api/';
 
+app.set('view engine', 'ejs');
+
 app.get('/', function (req, res) {
   res.send('Hello World!')
 })
@@ -55,8 +57,9 @@ app.get('/characters', function(req,res) {
 app.get('/character/:name', function(req,res) {
   http(BASE_URL + 'people/?search=' + req.params.name)
   .then( function (result) {
-    var obj = JSON.parse(result);
-    res.send(ejs.render(nameView(obj)));
+      var obj = JSON.parse(result);
+      var data = nameView(obj);
+      res.render('character', {attr: data});
   }).catch(function(err){
     res.send(err);
   })
@@ -104,14 +107,14 @@ app.get('/planetresidents', function(req,res) {
 });
 
 function nameView(swapi_obj) {
-  var res = '';
-
+  var res = [];
   for (var id in swapi_obj.results) {
-    res +=
-        "<b>Name: </b> <span>" + swapi_obj.results[id].name + "</span><br/>" +
-        "<b>Height: </b> <span>" + swapi_obj.results[id].height + "</span><br/>" +
-        "<b>Gender: </b> <span>" + swapi_obj.results[id].gender + "</span><br/><br/>";
-  }
+      if(!res[id]) res[id] = {};
+      res[id]['Name'] = swapi_obj.results[id].name;
+      res[id]['Height'] = swapi_obj.results[id].height;
+      res[id]['Gender'] = swapi_obj.results[id].gender;
 
+  }
+  console.log(res);
   return res;
 }
