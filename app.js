@@ -33,7 +33,6 @@ app.get('/characters', function(req,res) {
       .then(
           function (results) {
             var all = [];
-            console.log('results: ', results);
             for (var i in results) {
               var obj = JSON.parse(results[i]);
               all = all.concat(obj.results);
@@ -64,14 +63,45 @@ app.get('/character/:name', function(req,res) {
 })
 
 app.get('/planetresidents', function(req,res) {
-  http(BASE_URL + 'planets/')
+  var page = req.query['page'];
+  if (!page) {
+    page = 1;
+  }
+  http(BASE_URL + 'planets/?page=' + page)
   .then( function(result){
-    var obj = JSON.parse(result);
-    res.send(ejs.render(planetView(obj)));
+    var planetList = JSON.parse(result);
+
+    var ret = {};
+
+    var calls = [];
+    var planetUrlMap =  {};
+    for (var i in planetList.results) {
+      ret[planetList.results[i].name] = [];
+      planetUrlMap[planetList.results[i].url] = planetList.results[i].name;
+      for (var j in planetList.results[i].residents) {
+        calls.push(http(planetList.results[i].residents[j]));
+      }
+    }
+    Promise.all(calls)
+        .then(
+            function(peopleResults) {
+              for (var i in peopleResults) {
+                var personResult = JSON.parse(peopleResults[i]);
+                ret[planetUrlMap[personResult.homeworld]].push(personResult.name);
+              }
+              res.send(ret);
+            }
+        )
+        .catch(
+            function(err) {
+              res.send(err);
+            }
+        )
+    ;
   }).catch(function(err){
     res.send(err);
   })
-})
+});
 
 app.get('/planetresidents/:page', function(req,res) {
   http(BASE_URL + 'planets/?' + req.params.page)
@@ -81,7 +111,7 @@ app.get('/planetresidents/:page', function(req,res) {
   }).catch(function(err){
     res.send(err);
   })
-})
+});
 
 function nameView(swapi_obj) {
   var res = '';
