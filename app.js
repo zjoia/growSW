@@ -15,6 +15,12 @@ app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 })
 
+
+/* This will show all characters (up to 50)
+ // takes no parameter
+ // Returns RAW JSON
+ // no pagination
+ */
 app.get('/characters', function(req,res) {
 
   var calls = [
@@ -54,6 +60,11 @@ app.get('/characters', function(req,res) {
   ;
 })
 
+/*This will show character(s) based on name search criteria
+ // takes 'name' a parameter
+ // Returns ejs template (HTML)
+ //
+ */
 app.get('/character/:name', function(req,res) {
   http(BASE_URL + 'people/?search=' + req.params.name)
   .then( function (result) {
@@ -65,6 +76,12 @@ app.get('/character/:name', function(req,res) {
   })
 })
 
+
+/*This will show all the planets and who identifies that planet as their homeworld
+// Returns RAW JSON
+//Supports url pagination
+//i.e. /planetresidents?page=2 etc
+*/
 app.get('/planetresidents', function(req,res) {
   var page = req.query['page'];
   if (!page) {
