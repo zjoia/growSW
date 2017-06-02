@@ -103,16 +103,6 @@ app.get('/planetresidents', function(req,res) {
   })
 });
 
-app.get('/planetresidents/:page', function(req,res) {
-  http(BASE_URL + 'planets/?' + req.params.page)
-  .then( function(result){
-    var obj = JSON.parse(result);
-    res.send(ejs.render(planetView(obj)));
-  }).catch(function(err){
-    res.send(err);
-  })
-});
-
 function nameView(swapi_obj) {
   var res = '';
 
