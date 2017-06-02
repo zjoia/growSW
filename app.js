@@ -23,11 +23,16 @@ app.get('/characters', function(req,res) {
     http('http://swapi.co/api/people/?page=5')
   ];
 
+  var sortBy = req.query['sort'];
+
+  if (!sortBy) {
+    sortBy = 'name';
+  }
+
   Promise.all(calls)
       .then(
           function (results) {
             var all = [];
-            var sortBy = req.params['id'];
             console.log('results: ', results);
             for (var i in results) {
               var obj = JSON.parse(results[i]);
