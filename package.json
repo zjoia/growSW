@@ -1,0 +1,24 @@
+{
+  "name": "grow_sw",
+  "version": "1.0.0",
+  "description": "A little exercise using a Star Wars API [https://swapi.co/](https://swapi.co/)",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zjoia/growSW.git"
+  },
+  "author": "aboswell",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zjoia/growSW/issues"
+  },
+  "homepage": "https://github.com/zjoia/growSW#readme",
+  "dependencies": {
+    "ejs": "^2.5.6",
+    "express": "^4.15.3"
+  }
+}
