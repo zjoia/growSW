@@ -14,27 +14,38 @@ app.listen(3000, function () {
 })
 
 app.get('/characters', function(req,res) {
-  var all_char = [];
-  var nextUrl = BASE_URL + 'people/'
-  http(nextUrl)
-      .then(function (result) {
-        obj.results.length = 50;
-        obj.count = 50;
-        nextUrl = obj.next;
-        all_char.push(result);
-      }).catch(function(err){
-    res.send(err);
-  })
-  for (i = 0; i <= 4; i++) {
-    http(nextUrl)
-        .then(function (result) {
-          nextUrl = obj.next;
-          all_char.push(result);
-        }).catch(function(err){
-      res.send(err);
-    })
-  }
-  console.log(JSON.parse(all_char));
+
+  var calls = [
+    http('http://swapi.co/api/people/?page=1'),
+    http('http://swapi.co/api/people/?page=2'),
+    http('http://swapi.co/api/people/?page=3'),
+    http('http://swapi.co/api/people/?page=4'),
+    http('http://swapi.co/api/people/?page=5')
+  ];
+
+  Promise.all(calls)
+      .then(
+          function (results) {
+            var all = [];
+            var sortBy = req.params['id'];
+            console.log('results: ', results);
+            for (var i in results) {
+              var obj = JSON.parse(results[i]);
+              all = all.concat(obj.results);
+            }
+
+            all.sort(function (a,b) {
+              if(isNaN(a[sortBy])) {
+                return a[sortBy].localeCompare(b[sortBy]);
+              } else {
+                return a[sortBy] - b[sortBy];
+              }
+            });
+
+            res.send(all);
+          }
+      )
+  ;
 })
 
 app.get('/character/:name', function(req,res) {
@@ -48,20 +59,20 @@ app.get('/character/:name', function(req,res) {
 })
 
 app.get('/planetresidents', function(req,res) {
-  http(BASE_URL + 'planets/');
+  http(BASE_URL + 'planets/')
   .then( function(result){
     var obj = JSON.parse(result);
-    res.send(obj);
+    res.send(ejs.render(planetView(obj)));
   }).catch(function(err){
     res.send(err);
   })
 })
 
 app.get('/planetresidents/:page', function(req,res) {
-  http(BASE_URL + 'planets/?' + req.params.page);
+  http(BASE_URL + 'planets/?' + req.params.page)
   .then( function(result){
     var obj = JSON.parse(result);
-    res.send(obj);
+    res.send(ejs.render(planetView(obj)));
   }).catch(function(err){
     res.send(err);
   })
@@ -81,5 +92,24 @@ function nameView(swapi_obj) {
 }
 
 function planetView(swapi_obj) {
-  var res = '';
+  var planetJSON = buildPlantView(swapi_obj);
+  return planetJSON;
+}
+
+
+function buildPlantView(swapi_obj) {
+  var res = [];
+  for (var id in swapi_obj.results) {
+    res[swapi_obj.results[id].name] = [];
+     for (var url in swapi_obj.results.residents) {
+       res[swapi_obj.results[id].name].push(getPersonName(url));
+     }
+  }
+}
+
+function getPersonName(url){
+  http(url)
+      .then( function(result){
+        return  result.name
+      })
 }
