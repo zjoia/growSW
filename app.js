@@ -13,8 +13,28 @@ app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 })
 
-app.get('/character', function(req,res) {
-  res.send('All The Chars')
+app.get('/characters', function(req,res) {
+  var all_char = [];
+  var nextUrl = BASE_URL + 'people/'
+  http(nextUrl)
+      .then(function (result) {
+        obj.results.length = 50;
+        obj.count = 50;
+        nextUrl = obj.next;
+        all_char.push(result);
+      }).catch(function(err){
+    res.send(err);
+  })
+  for (i = 0; i <= 4; i++) {
+    http(nextUrl)
+        .then(function (result) {
+          nextUrl = obj.next;
+          all_char.push(result);
+        }).catch(function(err){
+      res.send(err);
+    })
+  }
+  console.log(JSON.parse(all_char));
 })
 
 app.get('/character/:name', function(req,res) {
@@ -22,6 +42,26 @@ app.get('/character/:name', function(req,res) {
   .then( function (result) {
     var obj = JSON.parse(result);
     res.send(ejs.render(nameView(obj)));
+  }).catch(function(err){
+    res.send(err);
+  })
+})
+
+app.get('/planetresidents', function(req,res) {
+  http(BASE_URL + 'planets/');
+  .then( function(result){
+    var obj = JSON.parse(result);
+    res.send(obj);
+  }).catch(function(err){
+    res.send(err);
+  })
+})
+
+app.get('/planetresidents/:page', function(req,res) {
+  http(BASE_URL + 'planets/?' + req.params.page);
+  .then( function(result){
+    var obj = JSON.parse(result);
+    res.send(obj);
   }).catch(function(err){
     res.send(err);
   })
@@ -38,4 +78,8 @@ function nameView(swapi_obj) {
   }
 
   return res;
+}
+
+function planetView(swapi_obj) {
+  var res = '';
 }
