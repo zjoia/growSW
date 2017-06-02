@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %><</title>
+</head>
+<body>
+<% for(var id in chars) { %>
+<ul>
+    <% for(var key in chars[id]) { %>
+    <li>
+        <b><%= key %>: <%= chars[id][key]</b>
+    </li>
+    <% } %>
+</ul>
+<% } %>
+</body>
+</html>
