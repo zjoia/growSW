@@ -125,26 +125,3 @@ function nameView(swapi_obj) {
 
   return res;
 }
-
-function planetView(swapi_obj) {
-  var planetJSON = buildPlantView(swapi_obj);
-  return planetJSON;
-}
-
-
-function buildPlantView(swapi_obj) {
-  var res = [];
-  for (var id in swapi_obj.results) {
-    res[swapi_obj.results[id].name] = [];
-     for (var url in swapi_obj.results.residents) {
-       res[swapi_obj.results[id].name].push(getPersonName(url));
-     }
-  }
-}
-
-function getPersonName(url){
-  http(url)
-      .then( function(result){
-        return  result.name
-      })
-}
